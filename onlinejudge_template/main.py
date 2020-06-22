@@ -3,6 +3,7 @@ import sys
 from logging import DEBUG, INFO, basicConfig, getLogger
 from typing import *
 
+import colorlog
 import onlinejudge_template.analyzer.combined as analyzer
 import onlinejudge_template.generator._main as generator
 import onlinejudge_template.network as network
@@ -21,10 +22,13 @@ def main(args: Optional[List[str]] = None) -> None:
     parser.add_argument('-c', '--cookie', default=onlinejudge.utils.default_cookie_path)
     parsed = parser.parse_args(args=args)
 
+    # configure logging
+    handler = colorlog.StreamHandler()
+    handler.setFormatter(colorlog.ColoredFormatter('%(log_color)s%(levelname)s:%(name)s:%(message)s'))
+    level = INFO
     if parsed.verbose:
-        basicConfig(level=DEBUG)
-    else:
-        basicConfig(level=INFO)
+        level = DEBUG
+    basicConfig(level=level, handlers=[handler])
 
     # download
     url = parsed.url

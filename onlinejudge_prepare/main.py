@@ -10,6 +10,7 @@ from logging import DEBUG, INFO, basicConfig, getLogger
 from typing import *
 
 import appdirs
+import colorlog
 import onlinejudge_template.analyzer.combined as analyzer
 import onlinejudge_template.generator._main as generator
 import onlinejudge_template.network as network
@@ -149,10 +150,13 @@ def main(args: Optional[List[str]] = None) -> None:
     parser.add_argument('--config-file', type=pathlib.Path, help=f"""default: {str(default_config_path)}""")
     parsed = parser.parse_args(args=args)
 
+    # configure logging
+    handler = colorlog.StreamHandler()
+    handler.setFormatter(colorlog.ColoredFormatter('%(log_color)s%(levelname)s:%(name)s:%(message)s'))
+    level = INFO
     if parsed.verbose:
-        basicConfig(level=DEBUG)
-    else:
-        basicConfig(level=INFO)
+        level = DEBUG
+    basicConfig(level=level, handlers=[handler])
 
     config = get_config(config_path=parsed.config_file)
     logger.info('config: %s', config)
